@@ -2,7 +2,7 @@ const API = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-a
 
 // Переделать в ДЗ не использовать fetch а Promise
 let getRequest = (url, cb) => {
-  return new Promise((resolve, reject)=>{
+  return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.onreadystatechange = () => {
@@ -15,7 +15,7 @@ let getRequest = (url, cb) => {
       }
     };
     xhr.send();
- 
+
   });
 };
 
@@ -49,13 +49,12 @@ class ProductList {
   //   });
   // }
 
-  async #getProducts() {
-    try {
-      const response = await fetch(`${API}/catalogData.json`);
-      return await response.json();
-    } catch (error) {
-      console.log(error);
-    }
+  #getProducts() {
+    return fetch(`${API}/catalogData.json`)
+      .then(response => response.json())
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   sum() {
@@ -124,23 +123,34 @@ class CartList {
         console.log(`Ошибка получения данных: ${error}`);
       })
   }
-  //////////////////////TODO//////////////////////
-  addToCart(id) {
-    const existedItem = this.allProducts.find(product => product.id_product === +id);
-    if (existedItem) {
-      existedItem.quantity += 1;
-    } else {
-      const notExistedItem = list._allProducts.filter(product => product.id_product == +id)[0];
-      notExistedItem.quantity = 1;
-      this.allProducts.push(new CartItem(notExistedItem));
+  //Добавить в корзину
+  async addToCart(id) {
+    try {
+      const result1 = await fetch(`${API}/addToBasket.json`);
+      const data = await result1.json();
+      this.dataOk = data.result;
+      if (this.dataOk == 1) {
+        const existedItem = this.allProducts.find(product => product.id_product === +id);
+        if (existedItem) {
+          existedItem.quantity += 1;
+        } else {
+          const notExistedItem = list._allProducts.filter(product_1 => product_1.id_product == +id)[0];
+          notExistedItem.quantity = 1;
+          this.allProducts.push(new CartItem(notExistedItem));
+
+        }
+        cart.renderBasket();
+      }
+    } catch (error) {
+      console.log(`Ошибка получения данных при добавлении товара: ${error}`);
     }
+
   };
-  /////////////////////////////////////////////////////
   //Обрабатывает событие кнопки удаления добавления
 
   productAddListener(event) {
     cart.addToCart(event.srcElement.dataset.id);
-    cart.renderBasket();
+
   }
   //Добавляет слушателей события на кнопки добавления
 
@@ -154,7 +164,7 @@ class CartList {
 
   productDeleteListener(event) {
     cart.deleteFromCart(event.srcElement.dataset.id);
-    cart.renderBasket();
+
   }
   //Добавляет слушателей события на кнопки удаления
 
@@ -166,14 +176,24 @@ class CartList {
   }
 
   // удаление товара из корзины 
-  deleteFromCart(id) {
-    const existedItem = this.allProducts.find(product => product.id_product === +id);
-    if (existedItem && existedItem.quantity != 1) {
-      existedItem.quantity -= 1;
+  async deleteFromCart(id) {
+    try {
+      const result = await fetch(`${API}/deleteFromBasket.json`);
+      const data = await result.json();
+      if (data.result == 1) {
+        const existedItem = this.allProducts.find(product => product.id_product === +id);
+        if (existedItem && existedItem.quantity != 1) {
+          existedItem.quantity -= 1;
+        }
+        else {
+          this.allProducts = this.allProducts.filter((nextItem) => (nextItem.id_product != id));
+        }
+        cart.renderBasket();
+      }
+    } catch (error) {
+      console.log(`Ошибка получения данных при удалении товара: ${error}`);
     }
-    else {
-      this.allProducts = this.allProducts.filter((nextItem) => (nextItem.id_product != id));
-    }
+
 
   }
   //отрисовка корзины
@@ -184,10 +204,26 @@ class CartList {
       const prod = new CartItem(product);
       block.insertAdjacentHTML('beforeend', prod.renderItem());
     }
-    let out = `<div class="out">Всего товаров в корзине: ${this.countGoods}<br> На сумму: ${this.amount} рублей</div> `;
+    let out = `<div class="out">Всего товаров в корзине: ${this.countBaketGoods()}<br> На сумму: ${this.sumBasket()} рублей</div> `;
     block.insertAdjacentHTML('beforeend', out);
     cart.productAddAddListeners();
     cart.productAddDeleteListeners();
+  }
+  //Сумма товаров в корзине
+  sumBasket(){
+      let total = 0;
+      for ( let i = 0; i < this.allProducts.length; i++ ) {
+          total += this.allProducts[i]["price"]*this.allProducts[i]["quantity"]
+      }
+      return total  
+  }
+  //Количество товаров в корзине
+  countBaketGoods(){
+    let total = 0;
+    for ( let i = 0; i < this.allProducts.length; i++ ) {
+        total += this.allProducts[i]["quantity"]
+    }
+    return total 
   }
 }
 
