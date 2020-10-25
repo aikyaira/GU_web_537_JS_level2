@@ -75,7 +75,7 @@ class ProductList {
 }
 
 class ProductItem {
-  constructor(product, img = 'https://placehold.it/200x150') {
+  constructor(product, img = 'https://placehold.it/400x400') {
     this.product_name = product.product_name;
     this.price = product.price;
     this.id_product = product.id_product;
@@ -210,20 +210,20 @@ class CartList {
     cart.productAddDeleteListeners();
   }
   //Сумма товаров в корзине
-  sumBasket(){
-      let total = 0;
-      for ( let i = 0; i < this.allProducts.length; i++ ) {
-          total += this.allProducts[i]["price"]*this.allProducts[i]["quantity"]
-      }
-      return total  
+  sumBasket() {
+    let total = 0;
+    for (let i = 0; i < this.allProducts.length; i++) {
+      total += this.allProducts[i]["price"] * this.allProducts[i]["quantity"]
+    }
+    return total
   }
   //Количество товаров в корзине
-  countBaketGoods(){
+  countBaketGoods() {
     let total = 0;
-    for ( let i = 0; i < this.allProducts.length; i++ ) {
-        total += this.allProducts[i]["quantity"]
+    for (let i = 0; i < this.allProducts.length; i++) {
+      total += this.allProducts[i]["quantity"]
     }
-    return total 
+    return total
   }
 }
 
@@ -249,9 +249,90 @@ class CartItem {
   }
 
 }
-
-
-
-
+class EmailForm {
+  constructor(container = '.emailForm') {
+    this.container = container;
+    this.renderForm();
+    this.name = document.querySelector('#name');
+    this.phone = document.querySelector('#phone');
+    this.email = document.querySelector('#email');
+    this.submitBtn = document.querySelector('#submit');
+    this.successMsgOrErrorMsg = document.querySelector('.successMsgOrErrorMsg');
+    this.submitAddEventListener();
+       }
+  renderForm() {
+    const block = document.querySelector(this.container);
+    block.innerHTML = `<form>
+                        <input type="text" name="name" id="name" placeholder="Имя">
+                        <input type="tel" name="phone" id="phone" placeholder="Телефон">
+                        <input type="email" name="email" id="email" placeholder="Email">
+                        <textarea name="text" id="text" cols="30" rows="10" placeholder="Сообщение"></textarea>
+                        <button id="submit">Отправить</button>
+                        <div class="successMsgOrErrorMsg"></div>
+                      </form>`;
+    
+  }
+  nameValidation() {
+    return /[а-яА-ЯёЁa-zA-Z]/i.test(this.name.value);
+  }
+  phoneValidation() {
+    return /\+7\(\d{3}\)\d{3}\-\d{4}/i.test(this.phone.value);
+  }
+  emailValidation() {
+    return /[a-z.-]+\@[a-z]+\.[a-z]{2,3}/i.test(this.email.value);
+  }
+  submitAddEventListener() {
+    this.submitBtn.addEventListener('click', this.submitEventListener)
+  }
+  submitEventListener(event) {
+    event.preventDefault();
+    let name = form.nameValidation();
+    let phone = form.phoneValidation();
+    let email = form.emailValidation();
+    form.name.classList.remove('error');
+    form.phone.classList.remove('error');
+    form.email.classList.remove('error');
+    if (name && phone && email) {
+      form.successMsgOrErrorMsg.innerHTML="<p>Ваше сообщение успешно отправлено!</p>"
+    } else {
+      form.successMsgOrErrorMsg.innerHTML="<p>Пожалуйста, исправьте поля:</p>"
+      form.errorReport(name, phone, email);
+    }
+  }
+  errorReport(name, phone, email) {
+    if (name === false) {
+      this.name.classList.add('error');
+      this.successMsgOrErrorMsg.insertAdjacentHTML("beforeend", `<p>Имя</p>`)
+    }
+    if (phone === false) {
+      this.phone.classList.add('error');
+      this.successMsgOrErrorMsg.insertAdjacentHTML("beforeend", `<p>Телефон</p>`)
+    }
+    if (email === false) {
+      this.email.classList.add('error');
+      this.successMsgOrErrorMsg.insertAdjacentHTML("beforeend", `<p>Email</p>`)
+    }
+  }
+}
 const list = new ProductList();
 let cart = new CartList();
+let form = new EmailForm();
+let text = `One: 'Hi Mary.' 
+Two: 'Oh, hi.'
+One: 'How are you doing?'
+Two: 'I'm doing alright. How about you?'
+One: 'Not too bad. The weather is great isn't it?'
+Two: 'Yes. It's absolutely beautiful today.'
+One: 'I wish it was like this more frequently.'
+Two: 'Me too.'
+One: 'So where are you going now?'
+Two: 'I'm going to meet a friend of mine at the department store'
+One: 'Going to do a little shopping?'
+Two: 'Yeah, I have to buy some presents for my parents.'
+One: 'What's the occasion?'
+Two: 'It's their anniversary.'
+One: 'That's great. Well, you better get going. You don't want to be late.'
+Two: 'I'll see you next time.'
+One: 'Sure.' Bye.'`
+console.log(text.replace(/\'/g, '"')); //задание 1
+console.log(text.replace(/\B'|'\B/g, '"')); //задание 2
