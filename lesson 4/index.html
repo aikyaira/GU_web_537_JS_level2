@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет-магазин</title>
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">Интернет-магазин</div>
+        <a class="btn-cart" type="button">Корзина
+            <div class="cart hidden">
+                <div class="cart-content"></div>
+            </div>
+        </a>
+
+    </header>
+    <main>
+        <div class="products"></div>
+        <div class="emailForm">
+
+        </div>
+    </main>
+    
+    <script src="./js/main.js"></script>
+    <script>
+        document.querySelector('.btn-cart').addEventListener("mouseover", () => {
+            document.querySelector('.cart').classList.remove("hidden");
+            document.querySelector('.cart').classList.remove("scale-out-center");
+            document.querySelector('.cart').classList.add("scale-in-center");
+        });
+        document.querySelector('.btn-cart').addEventListener("mouseout", () => {
+            document.querySelector('.cart').classList.remove("scale-in-center");
+            document.querySelector('.cart').classList.add("scale-out-center");
+        });
+    </script>
+</body>
+
+</html>
