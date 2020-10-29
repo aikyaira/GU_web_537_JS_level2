@@ -70,12 +70,8 @@ const app = new Vue({
             }
 
         },
-        cartVisibility() {
-            if (this.isVisibleCart) {
-                this.isVisibleCart = false
-            } else {
-                this.isVisibleCart = true
-            }
+        cartVisibility() {           
+                this.isVisibleCart = !this.isVisibleCart           
         },
     },
     computed: {
