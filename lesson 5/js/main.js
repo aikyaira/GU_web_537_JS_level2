@@ -63,7 +63,7 @@ const app = new Vue({
         },
         search() {
             if (this.searchLine === "") {
-                this.filteredProducts = this.products;
+                this.filteredProducts = [...this.products];
             } else {
                 let regexp = new RegExp(this.searchLine, 'i');
                 this.filteredProducts = this.products.filter(el => regexp.test(el.product_name));
