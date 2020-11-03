@@ -24,17 +24,23 @@ Vue.component('cart', {
             }
         },
         remove(item) {
-            this.$parent.getJson(`${API}/deleteFromBasket.json`)
-                .then(data => {
-                    if(data.result === 1) {
-                        if(item.quantity>1){
-                            item.quantity--;
-                        } else {
+            if (item.quantity > 1) {
+                this.$parent.putJson(`/api/cart/${item.id_product}`, {quantity: -1})
+                    .then(data => {
+                        if(data.result === 1){
+                            item.quantity--
+                        }
+                    })
+            } else {
+                this.$parent.deleteJson(`/api/cart/${item.id_product}`, item)
+                    .then(data => {
+                        if(data.result === 1){
                             this.cartItems.splice(this.cartItems.indexOf(item), 1)
                         }
-                    }
-                })
-        },
+                    });
+
+            }
+        }
     },
     mounted(){
         this.$parent.getJson('/api/cart')

@@ -7,13 +7,13 @@ const change = (cart, req) => {
   find.quantity += req.body.quantity;
   return JSON.stringify(cart, null, 4);
 };
-const del = (cart, req) => {
-  const find = cart.contents.find(el => el.id_product === +req.params.id);
-  find.quantity += req.body.quantity;
+const del = (cart, req) => {  
+  cart.contents.splice(cart.contents.indexOf(req.body), 1);
   return JSON.stringify(cart, null, 4);
 };
 
 module.exports = {
   add,
   change,
+  del,
 };
